@@ -600,7 +600,7 @@ void ShapesApp::BuildShapeGeometry()
 	//GeometryGenerator is a utility class for generating simple geometric shapes like grids, sphere, cylinders, and boxes
 	GeometryGenerator geoGen;
 	//The MeshData structure is a simple structure nested inside GeometryGenerator that stores a vertexand index list
-	GeometryGenerator::MeshData diamond = geoGen.CreateDiamond(1.0f, 1.0f, 1.0f);
+	GeometryGenerator::MeshData diamond = geoGen.CreateDiamond(1.0f, 1.0f, 1.0f, 0.0f);
 
 
 	//
@@ -639,7 +639,7 @@ void ShapesApp::BuildShapeGeometry()
 	for (size_t i = 0; i < diamond.Vertices.size(); ++i, ++k)
 	{
 		vertices[k].Pos = diamond.Vertices[i].Position;
-		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkOrange);
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::LightCoral);
 	}
 
 

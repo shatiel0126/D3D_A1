@@ -111,9 +111,9 @@ public:
     MeshData CreateQuad(float x, float y, float w, float h, float depth);
 
 	MeshData CreatePyramid(float x, float y, float height, uint32 numSubdivisions);
-	MeshData CreateDiamond(float x, float y, float height);
-	MeshData CreateTriangularPrism(float x, float y, float height);
-	MeshData CreateWedge(float width, float depth, float height);
+	MeshData CreateDiamond(float width, float height, float depth, uint32 numSubdivisions);
+	MeshData CreateTriangularPrism(float width, float height, float depth, uint32 numSubdivisions);
+	MeshData CreateWedge(float width, float height, float depth, uint32 numSubdivisions);
 	MeshData CreateCone(float bottomRadius, float height, uint32 sliceCount, uint32 stackCount);
 
 	void Subdivide(MeshData& meshData);

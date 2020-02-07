@@ -497,7 +497,7 @@ void ShapesApp::BuildShapeGeometry()
 	GeometryGenerator geoGen;
 	
 	// ------------------------
-	// **** We should Fix here 
+	// **** We should use here 
 	// ------------------------
 
 	//The MeshData structure is a simple structure nested inside GeometryGenerator that stores a vertexand index list
@@ -505,24 +505,33 @@ void ShapesApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData grid = geoGen.CreateGrid(50.0f, 20.0f, 20, 50);
 	GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.2f, 0.2f, 3.0f, 20, 20);
-	GeometryGenerator::MeshData cone = geoGen.CreateCylinder(0.5f, 0.0f, 3.0f, 20, 20);
+	GeometryGenerator::MeshData cone = geoGen.CreateCone(0.5f, 3.0f, 20, 20);
 	GeometryGenerator::MeshData pyramid = geoGen.CreatePyramid(1.0f, 1.0f, 1.0f, 0.0f);
+	GeometryGenerator::MeshData diamond = geoGen.CreateDiamond(1.0f, 1.0f, 1.0f, 0.0f);
+	GeometryGenerator::MeshData prism = geoGen.CreateTriangularPrism(1.0f, 1.0f, 1.0f, 0.0f);
+	GeometryGenerator::MeshData wedge = geoGen.CreateWedge(1.0f, 1.0f, 1.0f, 0.0f);
 
 	// Cache the vertex offsets to each object in the concatenated vertex buffer.
 	UINT boxVertexOffset = 0;
 	UINT gridVertexOffset = (UINT)box.Vertices.size();
 	UINT sphereVertexOffset = gridVertexOffset + (UINT)grid.Vertices.size();
 	UINT cylinderVertexOffset = sphereVertexOffset + (UINT)sphere.Vertices.size();
-	UINT coneVertexOffset = cylinderVertexOffset + (UINT)sphere.Vertices.size();
-	UINT pyramidVertexOffset = coneVertexOffset + (UINT)pyramid.Vertices.size();
+	UINT coneVertexOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
+	UINT pyramidVertexOffset = coneVertexOffset + (UINT)cone.Vertices.size();
+	UINT diamondVertexOffset = pyramidVertexOffset + (UINT)pyramid.Vertices.size();
+	UINT prismVertexOffset = diamondVertexOffset + (UINT)diamond.Vertices.size();
+	UINT wedgeVertexOffset = prismVertexOffset + (UINT)prism.Vertices.size();
 
 	// Cache the starting index for each object in the concatenated index buffer.
 	UINT boxIndexOffset = 0;
 	UINT gridIndexOffset = (UINT)box.Indices32.size();
 	UINT sphereIndexOffset = gridIndexOffset + (UINT)grid.Indices32.size();
 	UINT cylinderIndexOffset = sphereIndexOffset + (UINT)sphere.Indices32.size();
-	UINT coneIndexOffset = cylinderIndexOffset + (UINT)sphere.Indices32.size();
-	UINT pyramidIndexOffset = coneIndexOffset + (UINT)pyramid.Indices32.size();
+	UINT coneIndexOffset = cylinderIndexOffset + (UINT)cylinder.Indices32.size();
+	UINT pyramidIndexOffset = coneIndexOffset + (UINT)cone.Indices32.size();
+	UINT diamondIndexOffset = pyramidIndexOffset + (UINT)pyramid.Indices32.size();
+	UINT prismIndexOffset = diamondIndexOffset + (UINT)diamond.Indices32.size();
+	UINT wedgeIndexOffset = prismIndexOffset + (UINT)prism.Indices32.size();
 
 	// Define the SubmeshGeometry that cover different 
 	// regions of the vertex/index buffers.
@@ -557,11 +566,26 @@ void ShapesApp::BuildShapeGeometry()
 	pyramidSubmesh.StartIndexLocation = pyramidIndexOffset;
 	pyramidSubmesh.BaseVertexLocation = pyramidVertexOffset;
 
+	SubmeshGeometry diamondSubmesh;
+	diamondSubmesh.IndexCount = (UINT)diamond.Indices32.size();
+	diamondSubmesh.StartIndexLocation = diamondIndexOffset;
+	diamondSubmesh.BaseVertexLocation = diamondVertexOffset;
+
+	SubmeshGeometry prismSubmesh;
+	prismSubmesh.IndexCount = (UINT)prism.Indices32.size();
+	prismSubmesh.StartIndexLocation = prismIndexOffset;
+	prismSubmesh.BaseVertexLocation = prismVertexOffset;
+
+	SubmeshGeometry wedgeSubmesh;
+	wedgeSubmesh.IndexCount = (UINT)wedge.Indices32.size();
+	wedgeSubmesh.StartIndexLocation = wedgeIndexOffset;
+	wedgeSubmesh.BaseVertexLocation = wedgeVertexOffset;
+
 	// Extract the vertex elements we are interested in and pack the
 	// vertices of all the meshes into one vertex buffer.
 
-	auto totalVertexCount =	box.Vertices.size() + grid.Vertices.size() + sphere.Vertices.size() +
-		cylinder.Vertices.size() + cone.Vertices.size() + pyramid.Vertices.size();
+	auto totalVertexCount =	box.Vertices.size() + grid.Vertices.size() + sphere.Vertices.size() + cylinder.Vertices.size() + 
+		cone.Vertices.size() + pyramid.Vertices.size() + diamond.Vertices.size() + prism.Vertices.size() + wedge.Vertices.size();
 
 	std::vector<Vertex> vertices(totalVertexCount);
 
@@ -575,7 +599,10 @@ void ShapesApp::BuildShapeGeometry()
 	for (size_t i = 0; i < grid.Vertices.size(); ++i, ++k)
 	{
 		vertices[k].Pos = grid.Vertices[i].Position;
-		vertices[k].Color = XMFLOAT4(DirectX::Colors::Gray);
+		if (k % 2 == 0)
+			vertices[k].Color = XMFLOAT4(DirectX::Colors::Gray);
+		else
+			vertices[k].Color = XMFLOAT4(DirectX::Colors::Black);
 	}
 
 	for (size_t i = 0; i < sphere.Vertices.size(); ++i, ++k)
@@ -602,6 +629,24 @@ void ShapesApp::BuildShapeGeometry()
 		vertices[k].Color = XMFLOAT4(DirectX::Colors::Purple);
 	}
 
+	for (size_t i = 0; i < diamond.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = diamond.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkSalmon);
+	}
+
+	for (size_t i = 0; i < prism.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = prism.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::Green);
+	}
+
+	for (size_t i = 0; i < wedge.Vertices.size(); ++i, ++k)
+	{
+		vertices[k].Pos = wedge.Vertices[i].Position;
+		vertices[k].Color = XMFLOAT4(DirectX::Colors::Yellow);
+	}
+
 	std::vector<std::uint16_t> indices;
 	indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
 	indices.insert(indices.end(), std::begin(grid.GetIndices16()), std::end(grid.GetIndices16()));
@@ -609,6 +654,9 @@ void ShapesApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(cylinder.GetIndices16()), std::end(cylinder.GetIndices16()));
 	indices.insert(indices.end(), std::begin(cone.GetIndices16()), std::end(cone.GetIndices16()));
 	indices.insert(indices.end(), std::begin(pyramid.GetIndices16()), std::end(pyramid.GetIndices16()));
+	indices.insert(indices.end(), std::begin(diamond.GetIndices16()), std::end(diamond.GetIndices16()));
+	indices.insert(indices.end(), std::begin(prism.GetIndices16()), std::end(prism.GetIndices16()));
+	indices.insert(indices.end(), std::begin(wedge.GetIndices16()), std::end(wedge.GetIndices16()));
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
@@ -639,6 +687,9 @@ void ShapesApp::BuildShapeGeometry()
 	geo->DrawArgs["cylinder"] = cylinderSubmesh;
 	geo->DrawArgs["cone"] = coneSubmesh;
 	geo->DrawArgs["pyramid"] = pyramidSubmesh;
+	geo->DrawArgs["diamond"] = diamondSubmesh;
+	geo->DrawArgs["prism"] = prismSubmesh;
+	geo->DrawArgs["wedge"] = wedgeSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
 
@@ -730,7 +781,7 @@ void ShapesApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(sphereRitem));
 
 	auto cylinderRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&cylinderRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(10.0f, 1.0f, 0.0f));
+	XMStoreFloat4x4(&cylinderRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(4.0f, 1.0f, 0.0f));
 	cylinderRitem->ObjCBIndex = 3;
 	cylinderRitem->Geo = mGeometries["shapeGeo"].get();
 	cylinderRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -740,7 +791,7 @@ void ShapesApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(cylinderRitem));
 
 	auto coneRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&coneRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(6.0f, 1.0f, 0.0f));
+	XMStoreFloat4x4(&coneRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(7.0f, 1.0f, 0.0f));
 	coneRitem->ObjCBIndex = 4;
 	coneRitem->Geo = mGeometries["shapeGeo"].get();
 	coneRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -750,14 +801,44 @@ void ShapesApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(coneRitem));
 
 	auto pyramidRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&pyramidRitem->World, XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-10.0f, 1.0f, 0.0f));
+	XMStoreFloat4x4(&pyramidRitem->World, XMMatrixScaling(2.0f, 4.0f, 2.0f) * XMMatrixTranslation(10.0f, 0.0f, 0.0f));
 	pyramidRitem->ObjCBIndex = 5;
 	pyramidRitem->Geo = mGeometries["shapeGeo"].get();
 	pyramidRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	pyramidRitem->IndexCount = pyramidRitem->Geo->DrawArgs["box"].IndexCount;
-	pyramidRitem->StartIndexLocation = pyramidRitem->Geo->DrawArgs["box"].StartIndexLocation;
-	pyramidRitem->BaseVertexLocation = pyramidRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+	pyramidRitem->IndexCount = pyramidRitem->Geo->DrawArgs["pyramid"].IndexCount;
+	pyramidRitem->StartIndexLocation = pyramidRitem->Geo->DrawArgs["pyramid"].StartIndexLocation;
+	pyramidRitem->BaseVertexLocation = pyramidRitem->Geo->DrawArgs["pyramid"].BaseVertexLocation;
 	mAllRitems.push_back(std::move(pyramidRitem));
+
+	auto diamondRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&diamondRitem->World, XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-4.0f, 2.0f, 0.0f));
+	diamondRitem->ObjCBIndex = 6;
+	diamondRitem->Geo = mGeometries["shapeGeo"].get();
+	diamondRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	diamondRitem->IndexCount = diamondRitem->Geo->DrawArgs["diamond"].IndexCount;
+	diamondRitem->StartIndexLocation = diamondRitem->Geo->DrawArgs["diamond"].StartIndexLocation;
+	diamondRitem->BaseVertexLocation = diamondRitem->Geo->DrawArgs["diamond"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(diamondRitem));
+
+	auto prismRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&prismRitem->World, XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-7.0f, 1.0f, 0.0f));
+	prismRitem->ObjCBIndex = 7;
+	prismRitem->Geo = mGeometries["shapeGeo"].get();
+	prismRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	prismRitem->IndexCount = prismRitem->Geo->DrawArgs["prism"].IndexCount;
+	prismRitem->StartIndexLocation = prismRitem->Geo->DrawArgs["prism"].StartIndexLocation;
+	prismRitem->BaseVertexLocation = prismRitem->Geo->DrawArgs["prism"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(prismRitem));
+
+	auto wedgeRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&wedgeRitem->World, XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixTranslation(-10.0f, 1.1f, 0.0f));
+	wedgeRitem->ObjCBIndex = 8;
+	wedgeRitem->Geo = mGeometries["shapeGeo"].get();
+	wedgeRitem->PrimitiveType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	wedgeRitem->IndexCount = wedgeRitem->Geo->DrawArgs["wedge"].IndexCount;
+	wedgeRitem->StartIndexLocation = wedgeRitem->Geo->DrawArgs["wedge"].StartIndexLocation;
+	wedgeRitem->BaseVertexLocation = wedgeRitem->Geo->DrawArgs["wedge"].BaseVertexLocation;
+	mAllRitems.push_back(std::move(wedgeRitem));
 
 	// ------------------------
 	// **** End

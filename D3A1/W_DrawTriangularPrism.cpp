@@ -593,7 +593,7 @@ void ShapesApp::BuildShapeGeometry()
 	//GeometryGenerator is a utility class for generating simple geometric shapes like grids, sphere, cylinders, and boxes
 	GeometryGenerator geoGen;
 	//The MeshData structure is a simple structure nested inside GeometryGenerator that stores a vertexand index list
-	GeometryGenerator::MeshData prism = geoGen.CreateTriangularPrism(1.0f, 1.0f, 1.0f);
+	GeometryGenerator::MeshData prism = geoGen.CreateTriangularPrism(1.0f, 1.0f, 1.0f, 0.0f);
 
 
 	//

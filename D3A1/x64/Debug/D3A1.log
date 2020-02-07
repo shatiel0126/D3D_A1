@@ -1,3 +1,6 @@
 ﻿  mainGame.cpp
 d:\study\4nd semester\adv3dgraphics\a1\test\d3a1\d3a1\maingame.cpp(509): warning C4244: 'argument': conversion from 'float' to 'GeometryGenerator::uint32', possible loss of data
+d:\study\4nd semester\adv3dgraphics\a1\test\d3a1\d3a1\maingame.cpp(510): warning C4244: 'argument': conversion from 'float' to 'GeometryGenerator::uint32', possible loss of data
+d:\study\4nd semester\adv3dgraphics\a1\test\d3a1\d3a1\maingame.cpp(511): warning C4244: 'argument': conversion from 'float' to 'GeometryGenerator::uint32', possible loss of data
+d:\study\4nd semester\adv3dgraphics\a1\test\d3a1\d3a1\maingame.cpp(512): warning C4244: 'argument': conversion from 'float' to 'GeometryGenerator::uint32', possible loss of data
   D3A1.vcxproj -> D:\Study\4nd Semester\Adv3DGraphics\A1\Test\D3A1\x64\Debug\D3A1.exe
